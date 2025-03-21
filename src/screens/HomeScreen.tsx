@@ -1,169 +1,126 @@
-import React, { useState } from 'react';
-import { ScrollView, FlatList, Alert, Button } from 'react-native';
+import React from 'react';
 import styled from 'styled-components/native';
+import { FlatList } from 'react-native';
+import { Button } from 'react-native-elements';
 import { HeaderContainer, HeaderTitle } from '../components/Header';
+import theme from '../styles/theme';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-interface Item {
-  id: string;
-  text: string;
-  quantity: string; 
-  checked: boolean;
-}
+type RootStackParamList = {
+  Home: undefined;
+  CreateAppointment: undefined;
+  Profile: undefined;
+};
 
-const HomeScreen = () => {
-  const [text, setText] = useState('');
-  const [quantity, setQuantity] = useState(''); 
-  const [items, setItems] = useState<Item[]>([
-    { id: '1', text: 'Macarrão', quantity: '1', checked: false },
-    { id: '2', text: 'Ovo', quantity: '12', checked: false },
-  ]);
+type HomeScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
+};
 
-  const addItem = () => {
-    if (text.trim() && quantity.trim()) {
-      setItems([
-        ...items,
-        { id: Date.now().toString(), text, quantity, checked: false },
-      ]);
-      setText('');
-      setQuantity('');
-    } else {
-      Alert.alert('Erro', 'Por favor, preencha o nome e a quantidade do item.');
-    }
-  };
-
-  const toggleChecked = (id: string) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    );
-  };
-
-  const deleteItem = (id: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const [appointments, setAppointments] = React.useState([]);
 
   return (
     <Container>
       <HeaderContainer>
-        <HeaderTitle>Lista de Mercado</HeaderTitle>
+        <HeaderTitle>Minhas Consultas</HeaderTitle>
       </HeaderContainer>
 
       <Content>
-        <Input
-          placeholder="Item"
-          onChangeText={setText}
-          value={text}
-        />
-        <Input
-          placeholder="Quantidade"
-          onChangeText={setQuantity}
-          value={quantity}
-          keyboardType="numeric"
+        <Button 
+          title="Agendar Nova Consulta"
+          icon={{
+            name: 'calendar',
+            type: 'font-awesome',
+            size: 20,
+            color: 'white'
+          }}
+          buttonStyle={{
+            backgroundColor: theme.colors.primary,
+            borderRadius: 8,
+            padding: 12
+          }}
+          onPress={() => navigation.navigate('CreateAppointment')}
         />
 
-        <AddButton onPress={addItem}>
-          <ButtonText>Incluir na Lista</ButtonText>
-        </AddButton>
-
-        <FlatList
-          data={items}
+        <AppointmentList
+          data={appointments}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ListItem onPress={() => toggleChecked(item.id)}>
-              <Checkbox
-                checked={item.checked}
-                onPress={() => toggleChecked(item.id)}
-              />
-              <ListItemText
-                style={{
-                  color: item.checked ? '#6c757d' : '#000000',
-                }}
-              >
-                {item.text} - {item.quantity} {item.checked ? 'Ok! :)' : ''}
-              </ListItemText>
-              <DeleteButton onPress={() => deleteItem(item.id)}>
-                <DeleteButtonText>-</DeleteButtonText>
-              </DeleteButton>
-            </ListItem>
+            <AppointmentCard>
+              <DoctorImage source={{ uri: item.doctor.image }} />
+              <InfoContainer>
+                <DoctorName>{item.doctor.name}</DoctorName>
+                <Specialty>{item.doctor.specialty}</Specialty>
+                <DateTime>{item.date} - {item.time}</DateTime>
+              </InfoContainer>
+            </AppointmentCard>
           )}
+          ListEmptyComponent={
+            <EmptyText>Nenhuma consulta agendada</EmptyText>
+          }
         />
       </Content>
     </Container>
   );
 };
 
-const Container = styled.ScrollView`
+const Container = styled.View`
   flex: 1;
-  background-color: #C2C8A6;
+  background-color: ${theme.colors.background};
 `;
 
 const Content = styled.View`
-  padding: 20px;
+  flex: 1;
+  padding: ${theme.spacing.medium}px;
 `;
 
-const Input = styled.TextInput`
-  height: 40px;
-  background-color: #ffffff;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  padding: 10px;
+const AppointmentList = styled(FlatList)`
+  margin-top: ${theme.spacing.medium}px;
 `;
 
-const AddButton = styled.TouchableOpacity`
-  background-color: #313326;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  align-items: center;
-`;
-
-const ButtonText = styled.Text`
-  color: #ffffff;
-  font-weight: bold;
-`;
-
-const ListItem = styled.TouchableOpacity`
-  background-color: white;
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  elevation: 2;
+const AppointmentCard = styled.View`
+  background-color: ${theme.colors.white};
+  border-radius: 8px;
+  padding: ${theme.spacing.medium}px;
+  margin-bottom: ${theme.spacing.medium}px;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
 `;
 
-const ListItemText = styled.Text`
-  font-size: 16px;
+const DoctorImage = styled.Image`
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  margin-right: ${theme.spacing.medium}px;
+`;
+
+const InfoContainer = styled.View`
   flex: 1;
 `;
 
-const DeleteButton = styled.TouchableOpacity`
-  background-color: #F2C6C2;
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 8px;
+const DoctorName = styled.Text`
+  font-size: ${theme.typography.subtitle.fontSize}px;
+  font-weight: ${theme.typography.subtitle.fontWeight};
+  color: ${theme.colors.text};
 `;
 
-const DeleteButtonText = styled.Text`
-  color: white;
-  font-weight: bold;
-  font-size: 30;
+const Specialty = styled.Text`
+  font-size: ${theme.typography.body.fontSize}px;
+  color: ${theme.colors.text};
+  opacity: 0.8;
 `;
 
-const Checkbox = styled.TouchableOpacity<{ checked: boolean }>`
-  width: 24px;
-  height: 24px;
-  border: 2px solid #687339;
-  border-radius: 5px;
-  margin-right: 10px;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ checked }) => (checked ? '#687339' : 'transparent')};
+const DateTime = styled.Text`
+  font-size: ${theme.typography.body.fontSize}px;
+  color: ${theme.colors.primary};
+  margin-top: 4px;
+`;
+
+const EmptyText = styled.Text`
+  text-align: center;
+  color: ${theme.colors.text};
+  opacity: 0.6;
+  margin-top: ${theme.spacing.large}px;
 `;
 
 export default HomeScreen;
