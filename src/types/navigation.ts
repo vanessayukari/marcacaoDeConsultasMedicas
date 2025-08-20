@@ -25,4 +25,5 @@ export type RootStackParamList = {
   PatientDashboard: undefined;
   UserManagement: undefined;
   Notifications: undefined;
+  Settings: undefined;
 };
