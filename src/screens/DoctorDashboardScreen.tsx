@@ -77,19 +77,19 @@ const DoctorDashboardScreen: React.FC = () => {
         );
         setAppointments(doctorAppointments);
       }
-       // Carrega estatísticas do médico
-    if (user?.id) {
-      const stats = await statisticsService.getDoctorStatistics(user.id);
-      setStatistics(stats);
-    }
+      // Carrega estatísticas do médico
+      if (user?.id) {
+        const stats = await statisticsService.getDoctorStatistics(user.id);
+        setStatistics(stats);
+      }
     } catch (error) {
-       console.error('Erro ao carregar os dados:', error);
+      console.error('Erro ao carregar os dados:', error);
     } finally {
       setLoading(false);
     }
   };
 
-const handleOpenModal = (appointment: Appointment, action: 'confirm' | 'cancel') => {
+  const handleOpenModal = (appointment: Appointment, action: 'confirm' | 'cancel') => {
     setSelectedAppointment(appointment);
     setActionType(action);
     setModalVisible(true);
@@ -102,18 +102,17 @@ const handleOpenModal = (appointment: Appointment, action: 'confirm' | 'cancel')
 
   const handleConfirmAction = async (reason?: string) => {
     if (!selectedAppointment) return;
-     {
     try {
       const storedAppointments = await AsyncStorage.getItem('@MedicalApp:appointments');
       if (storedAppointments) {
         const allAppointments: Appointment[] = JSON.parse(storedAppointments);
         const updatedAppointments = allAppointments.map(appointment => {
-           if (appointment.id === selectedAppointment.id) {
-            return { 
-              ...appointment, 
+          if (appointment.id === selectedAppointment.id) {
+            return {
+              ...appointment,
               status: actionType === 'confirm' ? 'confirmed' : 'cancelled',
               ...(reason && { cancelReason: reason })
-             };
+            };
           }
           return appointment;
         });
@@ -164,35 +163,35 @@ const handleOpenModal = (appointment: Appointment, action: 'confirm' | 'cancel')
           buttonStyle={styles.settingsButton}
         />
 
-         <SectionTitle>Minhas Estatísticas</SectionTitle>
-          {statistics && (
-            <StatisticsGrid>
-              <StatisticsCard
-                title="Total de Consultas"
-                value={statistics.totalAppointments || 0}
-                color={theme.colors.primary}
-                subtitle="Consultas registradas"
-              />
-              <StatisticsCard
-                title="Consultas Confirmadas"
-                value={statistics.confirmedAppointments || 0}
-                color={theme.colors.success}
-                subtitle={`${statistics.statusPercentages?.confirmed?.toFixed(1) || 0}% do total`}
-              />
-              <StatisticsCard
-                title="Consultas Pendentes"
-                value={statistics.pendingAppointments || 0}
-                color={theme.colors.warning}
-                subtitle={`${statistics.statusPercentages?.pending?.toFixed(1) || 0}% do total`}
-              />
-              <StatisticsCard
-                title="Pacientes Atendidos"
-                value={statistics.totalPatients || 0}
-                color={theme.colors.secondary}
-                subtitle="Pacientes únicos"
-              />
-            </StatisticsGrid>
-          )}
+        <SectionTitle>Minhas Estatísticas</SectionTitle>
+        {statistics && (
+          <StatisticsGrid>
+            <StatisticsCard
+              title="Total de Consultas"
+              value={statistics.totalAppointments || 0}
+              color={theme.colors.primary}
+              subtitle="Consultas registradas"
+            />
+            <StatisticsCard
+              title="Consultas Confirmadas"
+              value={statistics.confirmedAppointments || 0}
+              color={theme.colors.success}
+              subtitle={`${statistics.statusPercentages?.confirmed?.toFixed(1) || 0}% do total`}
+            />
+            <StatisticsCard
+              title="Consultas Pendentes"
+              value={statistics.pendingAppointments || 0}
+              color={theme.colors.warning}
+              subtitle={`${statistics.statusPercentages?.pending?.toFixed(1) || 0}% do total`}
+            />
+            <StatisticsCard
+              title="Pacientes Atendidos"
+              value={statistics.totalPatients || 0}
+              color={theme.colors.secondary}
+              subtitle="Pacientes únicos"
+            />
+          </StatisticsGrid>
+        )}
 
         {loading ? (
           <LoadingText>Carregando consultas...</LoadingText>
@@ -202,15 +201,15 @@ const handleOpenModal = (appointment: Appointment, action: 'confirm' | 'cancel')
           appointments.map((appointment) => (
             <AppointmentCard key={appointment.id}>
               <ListItem.Content>
-              <ListItem.Title style={styles.patientName as TextStyle}>
-                Paciente: {appointment.patientName || 'Nome não disponível'}
-              </ListItem.Title>
-              <ListItem.Subtitle style={styles.dateTime as TextStyle}>
-                {appointment.date} às {appointment.time}
-              </ListItem.Subtitle>
-              <Text style={styles.specialty as TextStyle}>
-                {appointment.specialty}
-              </Text>
+                <ListItem.Title style={styles.patientName as TextStyle}>
+                  Paciente: {appointment.patientName || 'Nome não disponível'}
+                </ListItem.Title>
+                <ListItem.Subtitle style={styles.dateTime as TextStyle}>
+                  {appointment.date} às {appointment.time}
+                </ListItem.Subtitle>
+                <Text style={styles.specialty as TextStyle}>
+                  {appointment.specialty}
+                </Text>
                 <StatusBadge status={appointment.status}>
                   <StatusText status={appointment.status}>
                     {getStatusText(appointment.status)}

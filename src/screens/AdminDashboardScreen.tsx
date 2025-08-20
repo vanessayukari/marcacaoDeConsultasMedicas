@@ -7,7 +7,6 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
-import { RootStackParamList } from '../types/navigation'; 
 import StatisticsCard from '../components/StatisticsCard';
 import { statisticsService, Statistics } from '../services/statistics';
 import theme from '../styles/theme';
@@ -68,7 +67,7 @@ const AdminDashboardScreen: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
- const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
 
   const loadData = async () => {
     try {
@@ -88,12 +87,14 @@ const AdminDashboardScreen: React.FC = () => {
       // Carrega estatísticas
       const stats = await statisticsService.getGeneralStatistics();
       setStatistics(stats);
-      
+
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
+
+  }
 
   // Carrega os dados quando a tela estiver em foco
   useFocusEffect(
@@ -141,7 +142,7 @@ const AdminDashboardScreen: React.FC = () => {
           buttonStyle={styles.buttonStyle}
         />
 
-         <SectionTitle>Estatísticas Gerais</SectionTitle>
+        <SectionTitle>Estatísticas Gerais</SectionTitle>
         {statistics && (
           <StatisticsGrid>
             <StatisticsCard
@@ -175,7 +176,7 @@ const AdminDashboardScreen: React.FC = () => {
         {statistics && Object.entries(statistics.specialties).length > 0 && (
           <SpecialtyContainer>
             {Object.entries(statistics.specialties)
-              .sort(([,a], [,b]) => b - a)
+              .sort(([, a], [, b]) => b - a)
               .slice(0, 3)
               .map(([specialty, count]) => (
                 <SpecialtyItem key={specialty}>
@@ -387,4 +388,4 @@ const SpecialtyCount = styled.Text`
   font-weight: 600;
 `;
 
-export default AdminDashboardScreen; 
+export default AdminDashboardScreen;

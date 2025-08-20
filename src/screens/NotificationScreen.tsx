@@ -23,7 +23,7 @@ const NotificationsScreen: React.FC = () => {
 
   const loadNotifications = async () => {
     if (!user?.id) return;
-    
+
     try {
       const userNotifications = await notificationService.getNotifications(user.id);
       setNotifications(userNotifications);
@@ -51,7 +51,7 @@ const NotificationsScreen: React.FC = () => {
 
   const handleMarkAllAsRead = async () => {
     if (!user?.id) return;
-    
+
     try {
       await notificationService.markAllAsRead(user.id);
       loadNotifications();
@@ -155,7 +155,7 @@ const NotificationsScreen: React.FC = () => {
                 <NotificationIcon>{getNotificationIcon(notification.type)}</NotificationIcon>
                 <ListItem.Content>
                   <NotificationHeader>
-                    <ListItem.Title style={styles.title}>
+                    <ListItem.Title>
                       {notification.title}
                     </ListItem.Title>
                     {!notification.read && <UnreadDot />}
@@ -249,11 +249,11 @@ const EmptyText = styled.Text`
 `;
 
 const NotificationCard = styled.View<{ isRead: boolean }>`
-  background-color: ${(props) => props.isRead ? theme.colors.white : theme.colors.primary + '10'};
+  background-color: ${(props: { isRead: any; }) => props.isRead ? theme.colors.white : theme.colors.primary + '10'};
   border-radius: 8px;
   margin-bottom: 8px;
   border-width: 1px;
-  border-color: ${(props) => props.isRead ? theme.colors.border : theme.colors.primary + '30'};
+  border-color: ${(props: { isRead: any; }) => props.isRead ? theme.colors.border : theme.colors.primary + '30'};
 `;
 
 const NotificationIcon = styled.Text`

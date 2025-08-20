@@ -113,7 +113,7 @@ const CreateAppointmentScreen: React.FC = () => {
       await AsyncStorage.setItem('@MedicalApp:appointments', JSON.stringify(appointments));
 
       await notificationService.notifyNewAppointment(selectedDoctor.id, newAppointment);
-      
+
       alert('Consulta agendada com sucesso!');
       navigation.goBack();
     } catch (err) {
